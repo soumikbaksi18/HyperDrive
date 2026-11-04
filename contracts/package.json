@@ -10,17 +10,27 @@
     "clean": "hardhat clean",
     "deploy:local": "hardhat run scripts/deploy-counter.ts",
     "deploy:testnet": "hardhat run scripts/deploy-counter.ts --network monadTestnet",
-    "deploy:mainnet": "hardhat run scripts/deploy-counter.ts --network monadMainnet"
+    "deploy:mainnet": "hardhat run scripts/deploy-counter.ts --network monadMainnet",
+    "deploy:desk:local": "hardhat run scripts/deploy-desk.ts",
+    "deploy:desk:testnet": "hardhat run scripts/deploy-desk.ts --network monadTestnet",
+    "deploy:desk:mainnet": "hardhat run scripts/deploy-desk.ts --network monadMainnet",
+    "export-abi": "hardhat compile && node scripts/export-abi.ts",
+    "node": "hardhat node",
+    "local:setup": "hardhat run scripts/local-setup.ts --network localhost",
+    "local:fund": "hardhat run scripts/local-fund.ts --network localhost"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-ignition-viem": "^1.0.0",
+    "@nomicfoundation/hardhat-ignition-viem": "^3.1.6",
     "@nomicfoundation/hardhat-toolbox": "^7.0.0",
-    "@nomicfoundation/hardhat-toolbox-viem": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.7",
     "@types/node": "^26.6.6",
     "dotenv": "^18.0.9",
     "hardhat": "^3.21.2",
     "ts-node": "^10.9.2",
     "typescript": "^7.0.2",
     "viem": "^2.31.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
   }
 }

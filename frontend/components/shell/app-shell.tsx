@@ -4,11 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import {
+  Bot,
   LayoutDashboard,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  PieChart,
   Search,
+  Sparkles,
   TrendingUp,
   X,
 } from "lucide-react";
@@ -21,14 +24,32 @@ const NAV = [
   {
     href: "/dashboard",
     label: "Dashboard",
-    subtitle: "Baskets and wallet",
+    subtitle: "Holdings and wallet",
     icon: LayoutDashboard,
+  },
+  {
+    href: "/portfolio",
+    label: "Portfolio",
+    subtitle: "Positions and PnL",
+    icon: PieChart,
   },
   {
     href: "/markets",
     label: "Markets",
     subtitle: "Nasdaq xStocks on Monad",
     icon: TrendingUp,
+  },
+  {
+    href: "/engine",
+    label: "Trading engine",
+    subtitle: "Agent baskets and signals",
+    icon: Bot,
+  },
+  {
+    href: "/insights",
+    label: "Insights",
+    subtitle: "News and sentiment",
+    icon: Sparkles,
   },
 ];
 
@@ -73,7 +94,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           { label: "Dashboard", href: "/dashboard" },
           { label: "Markets" },
         ]
-      : [{ label: "Dashboard" }];
+      : pathname.startsWith("/portfolio")
+        ? [
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Portfolio" },
+          ]
+        : pathname.startsWith("/insights")
+          ? [
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Insights" },
+            ]
+          : pathname.startsWith("/engine")
+            ? [
+                { label: "Dashboard", href: "/dashboard" },
+                { label: "Trading engine" },
+              ]
+            : [{ label: "Dashboard" }];
 
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();
@@ -193,7 +229,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {(!collapsed || mobile) && (
         <div className="border-t border-white/10 px-4 py-4 text-xs leading-relaxed text-white/40">
-          Baskets and portfolio views are next. Markets is the live page.
+          Engine proposes baskets. You trade on Markets; PnL lives on Portfolio.
         </div>
       )}
     </aside>

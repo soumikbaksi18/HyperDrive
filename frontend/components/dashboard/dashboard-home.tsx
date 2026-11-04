@@ -2,11 +2,17 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { useAccount, useBalance } from "wagmi";
-import { formatUnits } from "viem";
+import { useQuery } from "@tanstack/react-query";
+import { useAccount, useBalance, useReadContract } from "wagmi";
+import { erc20Abi, formatUnits } from "viem";
 import { ArrowUpRight } from "lucide-react";
-import { formatMon } from "@/lib/format";
-import { nasdaqCatalog } from "@/lib/xstocks";
+import { PositionsTable } from "@/components/portfolio/positions-table";
+import { TradeHistory } from "@/components/portfolio/trade-history";
+import { fetchDesk } from "@/lib/api";
+import { cn } from "@/lib/cn";
+import { formatMon, formatPct, formatSignedUsd, formatUsd, pnlTone } from "@/lib/format";
+import { useHydrated } from "@/lib/use-hydrated";
+import { usePortfolio, useTrades } from "@/lib/use-portfolio";
 import { monadChain } from "@/lib/wagmi";
 
 const SLOTS = [
@@ -25,13 +31,31 @@ const SLOTS = [
 ];
 
 export function DashboardHome() {
-  const { address, isConnected, chainId } = useAccount();
+  const account = useAccount();
+  const hydrated = useHydrated();
+  const isConnected = hydrated && account.isConnected;
+  const address = hydrated ? account.address : undefined;
+  const chainId = hydrated ? account.chainId : undefined;
   const { data: balance, isLoading } = useBalance({
     address,
     chainId: monadChain.id,
     query: { enabled: Boolean(address) },
   });
   const onMonad = chainId === monadChain.id;
+  const desk = useQuery({ queryKey: ["desk"], queryFn: fetchDesk, staleTime: 60_000 });
+  const usdcAddress = desk.data?.configured ? desk.data.usdc : undefined;
+  const usdc = useReadContract({
+    address: usdcAddress,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    chainId: monadChain.id,
+    query: { enabled: Boolean(address && usdcAddress), refetchInterval: 30_000 },
+  });
+  const portfolio = usePortfolio();
+  const recent = useTrades(5);
+  const s = portfolio.data?.summary;
+  const active = (portfolio.data?.positions ?? []).filter((p) => p.status === "active");
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -47,12 +71,13 @@ export function DashboardHome() {
             {greeting}
           </p>
           <h1 className="mt-1 text-3xl font-medium tracking-tight md:text-4xl">
-            Your baskets will land here.
+            {s && s.activePositions > 0
+              ? `${s.activePositions} Nasdaq stock${s.activePositions === 1 ? "" : "s"} on the books.`
+              : "Your Nasdaq holdings land here."}
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55">
-            The desk is open. MetaMask can connect to Monad, and the Nasdaq
-            xStock list is on Markets. Agent baskets are not generated in this
-            version, so nothing here is an allocation.
+            Pay USDC on Monad for Nasdaq xStocks from Markets. Every fill is
+            settled on-chain and tracked here and on Portfolio.
           </p>
         </div>
         <Link
@@ -64,7 +89,31 @@ export function DashboardHome() {
         </Link>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <Kpi
+          label="Portfolio value"
+          value={!isConnected ? "—" : s ? formatUsd(s.marketValue) : "Reading…"}
+          detail={s ? `${s.activePositions} active · ${formatUsd(s.costBasis)} cost basis` : "Marked at xStocks prices"}
+        />
+        <Kpi
+          label="Total PnL"
+          value={!isConnected ? "—" : s ? formatSignedUsd(s.totalPnl) : "Reading…"}
+          detail={s ? `${formatPct(s.totalPnlPct)} · realized ${formatSignedUsd(s.realizedPnl)}` : "Realized + unrealized"}
+          tone={s ? pnlTone(s.totalPnl) : undefined}
+        />
+        <Kpi
+          label="USDC balance"
+          value={
+            !isConnected
+              ? "—"
+              : usdc.data != null
+                ? formatUsd(Number(formatUnits(usdc.data, 6)))
+                : desk.data && !desk.data.configured
+                  ? "Desk off"
+                  : "Reading…"
+          }
+          detail={isConnected ? "Available to buy xStocks" : "Connect MetaMask"}
+        />
         <Kpi
           label="Monad balance"
           value={
@@ -76,37 +125,38 @@ export function DashboardHome() {
                   ? formatMon(formatUnits(balance.value, balance.decimals))
                   : "—"
           }
-          detail={isConnected ? "Native MON on chain 143" : "Connect MetaMask"}
-        />
-        <Kpi
-          label="Funded basket"
-          value="None"
-          detail="No basket has been approved"
-        />
-        <Kpi
-          label="Nasdaq xStocks"
-          value={String(nasdaqCatalog.count)}
-          detail="Monad deployments in the catalog"
+          detail={isConnected ? `Native MON for gas · chain ${monadChain.id}` : "Connect MetaMask"}
         />
       </section>
 
       <section className="grid gap-4 lg:grid-cols-5">
-        <article className="app-card rounded-3xl p-6 lg:col-span-3">
-          <div className="flex items-center justify-between">
+        <article className="app-card overflow-hidden rounded-3xl lg:col-span-3">
+          <div className="flex items-center justify-between px-6 pt-5 pb-4">
             <h2 className="text-xs font-semibold tracking-[0.16em] text-white/45 uppercase">
-              Portfolio
+              Active stocks
             </h2>
-            <span className="rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-white/50">
-              Empty
-            </span>
+            <Link href="/portfolio" className="inline-flex items-center gap-1 text-xs text-violet-200 hover:text-white">
+              Full portfolio <ArrowUpRight className="size-3.5" />
+            </Link>
           </div>
-          <p className="mt-6 font-serif text-5xl italic text-white/90">No position</p>
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-white/50">
-            When you approve a basket, its weights and the marked value belong
-            in this panel. A falling market will show here as a drawdown, not
-            as a new basket chosen for you.
-          </p>
-          <div className="mt-8 h-28 rounded-2xl border border-dashed border-white/10 bg-white/[0.02]" />
+          {!isConnected ? (
+            <EmptyPanel text="Connect MetaMask to see the stocks you hold." />
+          ) : portfolio.isError ? (
+            <EmptyPanel text="The backend isn't reachable, so positions can't load right now." />
+          ) : portfolio.isLoading ? (
+            <EmptyPanel text="Loading positions…" />
+          ) : active.length === 0 ? (
+            <EmptyPanel text="No position yet. Pick a Nasdaq name on Markets and pay with USDC." cta />
+          ) : (
+            <div className="border-t border-white/10">
+              <PositionsTable positions={active.slice(0, 6)} compact />
+              {active.length > 6 && (
+                <Link href="/portfolio" className="block border-t border-white/10 px-5 py-3 text-center text-xs text-white/50 hover:text-white">
+                  +{active.length - 6} more on Portfolio
+                </Link>
+              )}
+            </div>
+          )}
         </article>
 
         <article className="app-card rounded-3xl p-6 lg:col-span-2">
@@ -133,12 +183,34 @@ export function DashboardHome() {
         </article>
       </section>
 
+      {isConnected && (recent.data?.length ?? 0) > 0 && (
+        <section className="app-card overflow-hidden rounded-3xl">
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <h2 className="text-xs font-semibold tracking-[0.16em] text-white/45 uppercase">Recent activity</h2>
+            <Link href="/portfolio" className="text-xs text-violet-200 hover:text-white">All trades</Link>
+          </div>
+          <TradeHistory trades={recent.data ?? []} />
+        </section>
+      )}
+
       <section>
         <div className="mb-4 flex items-end justify-between">
           <div>
             <h2 className="text-lg font-medium">Suggested baskets</h2>
-            <p className="text-sm text-white/45">Reserved for the agent. Empty on purpose.</p>
+            <p className="text-sm text-white/45">
+              Weights from the{" "}
+              <Link href="/engine" className="text-violet-200 hover:text-white">
+                trading engine
+              </Link>
+              .
+            </p>
           </div>
+          <Link
+            href="/engine"
+            className="text-xs text-violet-200 hover:text-white"
+          >
+            Open engine
+          </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {SLOTS.map((slot, index) => (
@@ -190,19 +262,34 @@ function Kpi({
   label,
   value,
   detail,
+  tone,
 }: {
   label: string;
   value: string;
   detail: string;
+  tone?: string;
 }) {
   return (
-    <article className="app-card h-[132px] rounded-2xl px-5 py-4">
+    <article className="app-card min-h-[132px] rounded-2xl px-4 py-4 md:px-5">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-white/45 uppercase">
         {label}
       </p>
-      <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
-      <p className="mt-1 text-xs text-white/40">{detail}</p>
+      <p className={cn("mt-3 text-2xl font-semibold tracking-tight tabular-nums md:text-3xl", tone)}>{value}</p>
+      <p className="mt-1 truncate text-xs text-white/40">{detail}</p>
     </article>
+  );
+}
+
+function EmptyPanel({ text, cta }: { text: string; cta?: boolean }) {
+  return (
+    <div className="mx-6 mb-6 flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-6 text-center text-sm text-white/50">
+      {text}
+      {cta && (
+        <Link href="/markets" className="rounded-full bg-white px-4 py-1.5 text-xs font-medium text-[#1c1038]">
+          Open markets
+        </Link>
+      )}
+    </div>
   );
 }
 
