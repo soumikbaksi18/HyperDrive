@@ -197,8 +197,20 @@ export function DashboardHome() {
         <div className="mb-4 flex items-end justify-between">
           <div>
             <h2 className="text-lg font-medium">Suggested baskets</h2>
-            <p className="text-sm text-white/45">Reserved for the agent. Empty on purpose.</p>
+            <p className="text-sm text-white/45">
+              Weights from the{" "}
+              <Link href="/engine" className="text-violet-200 hover:text-white">
+                trading engine
+              </Link>
+              .
+            </p>
           </div>
+          <Link
+            href="/engine"
+            className="text-xs text-violet-200 hover:text-white"
+          >
+            Open engine
+          </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {SLOTS.map((slot, index) => (

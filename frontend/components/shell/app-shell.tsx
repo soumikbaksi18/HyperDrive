@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import {
+  Bot,
   LayoutDashboard,
   Menu,
   PanelLeftClose,
@@ -37,6 +38,12 @@ const NAV = [
     label: "Markets",
     subtitle: "Nasdaq xStocks on Monad",
     icon: TrendingUp,
+  },
+  {
+    href: "/engine",
+    label: "Trading engine",
+    subtitle: "Agent baskets and signals",
+    icon: Bot,
   },
   {
     href: "/insights",
@@ -97,7 +104,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               { label: "Dashboard", href: "/dashboard" },
               { label: "Insights" },
             ]
-          : [{ label: "Dashboard" }];
+          : pathname.startsWith("/engine")
+            ? [
+                { label: "Dashboard", href: "/dashboard" },
+                { label: "Trading engine" },
+              ]
+            : [{ label: "Dashboard" }];
 
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();
@@ -217,7 +229,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {(!collapsed || mobile) && (
         <div className="border-t border-white/10 px-4 py-4 text-xs leading-relaxed text-white/40">
-          Buy on Markets with USDC. Positions and PnL live on Portfolio.
+          Engine proposes baskets. You trade on Markets; PnL lives on Portfolio.
         </div>
       )}
     </aside>
