@@ -394,3 +394,65 @@ export type HistoryResult = {
 
 export const fetchMarketHistory = (underlying: string, range = '6mo') =>
   request<HistoryResult>(`/market/history/${encodeURIComponent(underlying)}?range=${range}`);
+
+// ---------------------------------------------------------------------------
+// Basket tokens (Uniswap v4 hook)
+// ---------------------------------------------------------------------------
+
+export type PoolKey = {
+  currency0: `0x${string}`;
+  currency1: `0x${string}`;
+  fee: number;
+  tickSpacing: number;
+  hooks: `0x${string}`;
+};
+
+export type BasketInfo =
+  | { deployed: false }
+  | {
+      deployed: true;
+      symbol: string;
+      name: string;
+      basket: `0x${string}`;
+      hook: `0x${string}`;
+      router: `0x${string}`;
+      poolManager: `0x${string}`;
+      usdc: `0x${string}`;
+      poolKey: PoolKey;
+      totalSupply: number;
+      navPerShare: number;
+      tvl: number;
+      components: {
+        symbol: string;
+        address: `0x${string}`;
+        targetWeight: number;
+        liveWeight: number;
+        price: number | null;
+        reserve: number;
+        reserveUsd: number | null;
+        perShare: number;
+        perShareUsd: number | null;
+      }[];
+    };
+
+export type BasketQuote = {
+  side: 'buy' | 'sell';
+  symbol: string;
+  router: `0x${string}`;
+  poolKey: PoolKey;
+  zeroForOne: boolean;
+  tokenIn: `0x${string}`;
+  amountIn: string;
+  minAmountOut: string;
+  expectedOut: string;
+  expectedOutDecimal: string;
+  minOutDecimal: string;
+  hookData: `0x${string}`;
+  deadline: string;
+  legs: { symbol: string; usdc?: number; expectedOut?: string; amount?: string; expectedUsdc?: number }[];
+  expiresAt: string;
+};
+
+export const fetchBasket = () => request<BasketInfo>('/baskets');
+export const requestBasketQuote = (body: { trader: string; side: 'buy' | 'sell'; amount: string }) =>
+  request<BasketQuote>('/baskets/quote', { method: 'POST', body: JSON.stringify(body) });

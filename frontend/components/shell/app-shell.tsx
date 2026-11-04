@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import {
+  Layers,
   Bot,
   LayoutDashboard,
   Menu,
@@ -38,6 +39,12 @@ const NAV = [
     label: "Markets",
     subtitle: "Nasdaq xStocks on Monad",
     icon: TrendingUp,
+  },
+  {
+    href: "/baskets",
+    label: "Baskets",
+    subtitle: "NVDA + TSLA in one token",
+    icon: Layers,
   },
   {
     href: "/engine",
@@ -104,6 +111,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               { label: "Dashboard", href: "/dashboard" },
               { label: "Insights" },
             ]
+          : pathname.startsWith("/baskets")
+            ? [
+                { label: "Dashboard", href: "/dashboard" },
+                { label: "Baskets" },
+              ]
           : pathname.startsWith("/engine")
             ? [
                 { label: "Dashboard", href: "/dashboard" },

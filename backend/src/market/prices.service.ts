@@ -9,6 +9,12 @@ export class PricesService {
   private readonly logger = new Logger(PricesService.name);
   private readonly cache = new Map<string, { price: number | null; at: number }>();
   private readonly lastGood = new Map<string, { price: number; at: number }>();
+  private readonly resolvers = new Map<string, () => Promise<number | null>>();
+
+  /** Price a non-xStocks symbol (e.g. a basket at NAV) with a custom function. */
+  registerResolver(symbol: string, fn: () => Promise<number | null>) {
+    this.resolvers.set(symbol, fn);
+  }
 
   /** Always hits the API: used to sign quotes, where a cached price is not good enough. */
   async live(symbol: string): Promise<number | null> {
@@ -52,6 +58,8 @@ export class PricesService {
   }
 
   async get(symbol: string): Promise<number | null> {
+    const resolver = this.resolvers.get(symbol);
+    if (resolver) return resolver().catch(() => null);
     const hit = this.cache.get(symbol);
     if (hit && Date.now() - hit.at < (hit.price == null ? MISS_MS : FRESH_MS)) return hit.price;
     return this.live(symbol);

@@ -17,7 +17,8 @@
     "export-abi": "hardhat compile && node scripts/export-abi.ts",
     "node": "hardhat node",
     "local:setup": "hardhat run scripts/local-setup.ts --network localhost",
-    "local:fund": "hardhat run scripts/local-fund.ts --network localhost"
+    "local:fund": "hardhat run scripts/local-fund.ts --network localhost",
+    "deploy:basket:mainnet": "hardhat run scripts/deploy-basket.ts --network monadMainnet"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition-viem": "^3.1.6",
@@ -31,6 +32,7 @@
     "viem": "^2.31.0"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.4.0"
+    "@openzeppelin/contracts": "^5.4.0",
+    "@uniswap/v4-core": "^1.0.2"
   }
 }

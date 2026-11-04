@@ -51,7 +51,8 @@ export class SwapsService implements OnApplicationBootstrap, OnModuleDestroy {
   onApplicationBootstrap() {
     if (!this.enabled) return;
     void this.scanTradable();
-    this.scanTimer = setInterval(() => void this.scanTradable(), 30 * 60_000);
+    // Every 6h: Kyber rate-limits per IP and the same API executes real trades.
+    this.scanTimer = setInterval(() => void this.scanTradable(), 6 * 60 * 60_000);
   }
 
   onModuleDestroy() {
@@ -94,14 +95,15 @@ export class SwapsService implements OnApplicationBootstrap, OnModuleDestroy {
             break;
           }
           if (json && /route not found|token not found/i.test(json.message ?? '')) break;
-          await new Promise((r) => setTimeout(r, 800 * (attempt + 1))); // rate-limited or flaky: back off
+          await new Promise((r) => setTimeout(r, 3_000 * (attempt + 1))); // rate-limited or flaky: back off
         }
         this.scan.checked += 1;
+        await new Promise((r) => setTimeout(r, 250)); // pace requests to stay under the rate limit
         // Publish progress as it goes, so the UI fills in during the first scan.
         if (found.has(stock.symbol)) this.tradable.set(stock.symbol, found.get(stock.symbol)!);
       }
     };
-    await Promise.all(Array.from({ length: 4 }, worker));
+    await Promise.all(Array.from({ length: 2 }, worker));
     this.tradable = found;
     this.scan.finishedAt = new Date();
     this.logger.log(`DEX scan: ${found.size}/${stocks.length} assets have a USDC route on Monad`);

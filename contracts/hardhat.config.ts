@@ -5,15 +5,28 @@ import "dotenv/config";
 export default defineConfig({
   plugins: [hardhatToolboxViemPlugin],
   solidity: {
-    version: "0.8.31",
-    settings: {
-      evmVersion: "osaka",
-      viaIR: true,
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [
+      {
+        version: "0.8.31",
+        settings: {
+          evmVersion: "osaka",
+          viaIR: true,
+          optimizer: { enabled: true, runs: 200 },
+        },
       },
-    },
+      {
+        // Uniswap v4 PoolManager is pinned to 0.8.26 (used by local tests only).
+        version: "0.8.26",
+        settings: {
+          evmVersion: "cancun",
+          viaIR: true,
+          optimizer: { enabled: true, runs: 200 },
+        },
+      },
+    ],
+    npmFilesToBuild: [
+      "@uniswap/v4-core/src/PoolManager.sol",
+    ],
   },
   networks: {
     hardhat: {

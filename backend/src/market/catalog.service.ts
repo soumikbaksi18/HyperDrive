@@ -22,6 +22,7 @@ export class CatalogService {
   private readonly bySymbol = new Map<string, CatalogStock>();
   private readonly byAddress = new Map<string, CatalogStock>();
   private readonly sectors = new Map<string, string[]>();
+  private readonly synthetic = new Set<string>();
 
   constructor(@Inject(APP_CONFIG) config: AppConfig) {
     const file = path.resolve(process.cwd(), config.catalogPath);
@@ -56,7 +57,14 @@ export class CatalogService {
     return this.sectors.get(underlying.toUpperCase()) ?? ['Other'];
   }
 
+  /** Add a non-xStocks asset (e.g. a basket token) so trade indexing and portfolio treat it like a stock. */
+  registerSynthetic(stock: CatalogStock) {
+    this.synthetic.add(stock.symbol.toUpperCase());
+    this.bySymbol.set(stock.symbol.toUpperCase(), stock);
+    this.byAddress.set(stock.address.toLowerCase(), stock);
+  }
+
   allStocks(): CatalogStock[] {
-    return [...this.bySymbol.values()];
+    return [...this.bySymbol.values()].filter((s) => !this.synthetic.has(s.symbol.toUpperCase()));
   }
 }

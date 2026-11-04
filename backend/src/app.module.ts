@@ -12,6 +12,7 @@ import { NewsModule } from './news/news.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { SwapsModule } from './swaps/swaps.module';
+import { BasketsModule } from './baskets/baskets.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SwapsModule } from './swaps/swaps.module';
     QuotesModule,
     PortfolioModule,
     SwapsModule,
+    BasketsModule,
     NewsModule,
     HealthModule,
     LLMModule,
