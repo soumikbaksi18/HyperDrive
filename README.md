@@ -2,6 +2,9 @@
 
 **Trade tokenized equities on Monad. Track portfolio PnL. Let AI agents propose baskets—not trades you never approved.**
 
+<img width="1280" height="733" alt="image" src="https://github.com/user-attachments/assets/2d158db6-cf7f-4f55-a9be-8ab669fbc06c" />
+
+
 HyperDrive is a full-stack trading and intelligence platform for **xStocks** (tokenized public equities) on **Monad** (chain `143`). Connect MetaMask, browse the markets board, buy or sell with USDC, and see positions, cost basis, and realized/unrealized PnL per wallet. An optional **unified AI agent** scores names by sector, and the **trading engine** turns those signals into transparent basket ideas you can fund yourself.
 
 > **Not financial advice.** Equities—including tokenized ones—can lose value. HyperDrive is software; it does not custody your keys or guarantee prices, liquidity, or returns. Consult a licensed professional before investing.
@@ -49,11 +52,17 @@ HyperDrive is a full-stack trading and intelligence platform for **xStocks** (to
 - **Portfolio** — Positions, trade history, value chart from indexed fills and periodic snapshots.
 - **Dashboard** — Wallet-centric overview tied to connected address.
 
+<img width="1280" height="733" alt="image" src="https://github.com/user-attachments/assets/06aa3f39-ad9a-4bcd-ba4f-e8e0622e4aff" />
+
+
 ### Intelligence
 
 - **Trading engine** — Sector-aware scoring, Mag-7 and custom **baskets** (Steady Explorer, Balanced Growth, High-Growth Explorer), tradability from DEX scans.
 - **Insights** — News feed, search, summaries, and lightweight sentiment (optional NewsData.io / NewsAPI keys).
 - **Unified agent API** — Multi-sector stock analysis (technical, fundamental, sentiment scores, targets, LLM reasoning via Ollama).
+
+<img width="1280" height="733" alt="image" src="https://github.com/user-attachments/assets/dafd38ed-a0e9-43c7-9c9a-05ce039bcf6a" />
+
 
 ### On-chain
 
