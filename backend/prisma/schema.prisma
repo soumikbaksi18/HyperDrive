@@ -1,0 +1,346 @@
+// Prisma Schema for HyperDrive Stock Intelligence Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  walletAddress String?   @unique
+  
+  profile       UserProfile?
+  portfolios    Portfolio[]
+  watchlists    Watchlist[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([walletAddress])
+}
+
+model UserProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  riskTolerance     RiskLevel @default(MEDIUM)
+  investmentHorizon InvestmentHorizon @default(LONG_TERM)
+  investmentAmount  Float?
+  
+  preferences       Json     // Sector preferences, exclusions, etc.
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum InvestmentHorizon {
+  SHORT_TERM   // < 1 year
+  MEDIUM_TERM  // 1-3 years
+  LONG_TERM    // 3+ years
+}
+
+// ============================================
+// STOCKS & MARKET DATA
+// ============================================
+
+model Stock {
+  id            String   @id @default(cuid())
+  symbol        String   @unique
+  companyName   String
+  sector        String
+  industry      String
+  exchange      String   @default("NASDAQ")
+  
+  isActive      Boolean  @default(true)
+  lastAnalyzed  DateTime?
+  
+  prices        StockPrice[]
+  fundamentals  StockFundamentals[]
+  analyses      StockAnalysis[]
+  news          NewsItem[]
+  xStockTokens  XStockToken[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([symbol])
+  @@index([sector])
+}
+
+model StockPrice {
+  id        String   @id @default(cuid())
+  stockId   String
+  stock     Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  
+  date      DateTime
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    BigInt
+  
+  provider  String   // Data source
+  
+  @@unique([stockId, date])
+  @@index([stockId, date])
+}
+
+model StockFundamentals {
+  id              String   @id @default(cuid())
+  stockId         String
+  stock           Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  
+  marketCap       Float
+  pe              Float?
+  eps             Float?
+  dividendYield   Float?
+  beta            Float?
+  revenue         Float?
+  netIncome       Float?
+  
+  asOfDate        DateTime
+  provider        String
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([stockId, asOfDate])
+}
+
+// ============================================
+// AI ANALYSIS & RECOMMENDATIONS
+// ============================================
+
+model StockAnalysis {
+  id              String   @id @default(cuid())
+  stockId         String
+  stock           Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  
+  agentType       String   // e.g., "tech", "healthcare", "energy"
+  
+  score           Float    // Overall score 0-100
+  confidence      Float    // Confidence level 0-1
+  
+  recommendation  RecommendationType
+  
+  reasoning       String   @db.Text // LLM-generated explanation
+  
+  technicalScore  Float
+  fundamentalScore Float
+  sentimentScore  Float
+  riskScore       Float
+  
+  entryPoint      Float?
+  exitPoint       Float?
+  stopLoss        Float?
+  targetPrice     Float?
+  
+  prediction      Json     // Bullish/bearish prediction data
+  
+  analyzedAt      DateTime @default(now())
+  
+  @@index([stockId, analyzedAt])
+  @@index([agentType])
+}
+
+enum RecommendationType {
+  STRONG_BUY
+  BUY
+  HOLD
+  SELL
+  STRONG_SELL
+}
+
+model NewsItem {
+  id          String   @id @default(cuid())
+  stockId     String
+  stock       Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  
+  title       String
+  summary     String   @db.Text
+  url         String
+  source      String
+  sentiment   Float?   // -1 to 1
+  
+  publishedAt DateTime
+  createdAt   DateTime @default(now())
+  
+  @@index([stockId, publishedAt])
+}
+
+// ============================================
+// PORTFOLIOS & BUCKETS
+// ============================================
+
+model Portfolio {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  type        PortfolioType
+  
+  holdings    PortfolioHolding[]
+  
+  isPublic    Boolean  @default(false)
+  isPaper     Boolean  @default(true) // Paper trading vs real
+  
+  initialValue Float?
+  currentValue Float?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+enum PortfolioType {
+  CONSERVATIVE
+  BALANCED
+  AGGRESSIVE
+  SECTOR_THEMED
+  CUSTOM
+}
+
+model PortfolioHolding {
+  id          String   @id @default(cuid())
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  
+  symbol      String
+  quantity    Float
+  weight      Float    // Percentage allocation
+  
+  entryPrice  Float
+  entryDate   DateTime
+  
+  notes       String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([portfolioId, symbol])
+  @@index([portfolioId])
+}
+
+model Watchlist {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String
+  symbols     String[] // Array of stock symbols
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+// ============================================
+// BACKTESTING
+// ============================================
+
+model BacktestResult {
+  id              String   @id @default(cuid())
+  
+  strategyName    String
+  strategyConfig  Json
+  
+  symbols         String[]
+  startDate       DateTime
+  endDate         DateTime
+  
+  initialCapital  Float
+  finalValue      Float
+  totalReturn     Float
+  annualizedReturn Float
+  maxDrawdown     Float
+  sharpeRatio     Float
+  winRate         Float
+  
+  trades          Json     // Array of trade details
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([strategyName])
+  @@index([createdAt])
+}
+
+// ============================================
+// XSTOCKS INTEGRATION
+// ============================================
+
+model XStockToken {
+  id              String   @id @default(cuid())
+  
+  // Stock identification
+  stockId         String
+  stock           Stock    @relation(fields: [stockId], references: [id])
+  symbol          String   // e.g., "AAPL"
+  
+  // xStocks metadata
+  tokenSymbol     String   // e.g., "xAAPL"
+  tokenName       String   // e.g., "xStocks Apple Inc."
+  
+  // Multi-chain support
+  chains          XStockChain[]
+  
+  // Trading info
+  isActive        Boolean  @default(true)
+  tradingVolume24h Float?
+  fractionalMin   Float    @default(1.0) // Minimum purchase $1
+  
+  // Metadata
+  xStocksUrl      String?
+  lastVerified    DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([symbol])
+  @@index([symbol, isActive])
+}
+
+model XStockChain {
+  id              String   @id @default(cuid())
+  
+  xStockTokenId   String
+  xStockToken     XStockToken @relation(fields: [xStockTokenId], references: [id])
+  
+  // Chain info
+  chainId         Int      // e.g., 143 for Monad Mainnet
+  chainName       String   // e.g., "Monad"
+  
+  // Contract details
+  tokenAddress    String   // 0x... contract address
+  decimals        Int      @default(18)
+  
+  // Liquidity info
+  dexPools        Json?    // Array of DEX pool addresses
+  liquidityUsd    Float?
+  
+  // Verification
+  verified        Boolean  @default(false)
+  verifiedAt      DateTime?
+  
+  @@unique([xStockTokenId, chainId])
+  @@index([chainId, tokenAddress])
+}
