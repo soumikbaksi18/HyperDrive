@@ -8,6 +8,7 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  PieChart,
   Search,
   TrendingUp,
   X,
@@ -21,8 +22,14 @@ const NAV = [
   {
     href: "/dashboard",
     label: "Dashboard",
-    subtitle: "Baskets and wallet",
+    subtitle: "Holdings and wallet",
     icon: LayoutDashboard,
+  },
+  {
+    href: "/portfolio",
+    label: "Portfolio",
+    subtitle: "Positions and PnL",
+    icon: PieChart,
   },
   {
     href: "/markets",
@@ -73,7 +80,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           { label: "Dashboard", href: "/dashboard" },
           { label: "Markets" },
         ]
-      : [{ label: "Dashboard" }];
+      : pathname.startsWith("/portfolio")
+        ? [
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Portfolio" },
+          ]
+        : [{ label: "Dashboard" }];
 
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();
@@ -193,7 +205,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {(!collapsed || mobile) && (
         <div className="border-t border-white/10 px-4 py-4 text-xs leading-relaxed text-white/40">
-          Baskets and portfolio views are next. Markets is the live page.
+          Buy on Markets with USDC. Positions and PnL live on Portfolio.
         </div>
       )}
     </aside>

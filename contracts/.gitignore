@@ -5,3 +5,4 @@ typechain-types/
 coverage/
 .env
 .env.local
+deployments/31337.json

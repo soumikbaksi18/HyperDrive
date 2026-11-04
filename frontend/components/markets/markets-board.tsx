@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
+import { TradeDialog } from "@/components/trade/trade-dialog";
 import { formatCatalogDate, formatUsd, shortAddress } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { nasdaqCatalog, type NasdaqXStock } from "@/lib/xstocks";
@@ -23,6 +24,7 @@ export function MarketsBoard() {
   const knownQuotes = useRef<Record<string, number | null>>({});
   const [pending, setPending] = useState<string>("");
   const [copied, setCopied] = useState<string | null>(null);
+  const [trading, setTrading] = useState<NasdaqXStock | null>(null);
 
   if (initialQuery !== paramSeen) {
     setParamSeen(initialQuery);
@@ -165,12 +167,13 @@ export function MarketsBoard() {
         </div>
       ) : (
         <div className="app-card overflow-hidden rounded-3xl">
-          <div className="hidden grid-cols-[1.4fr_0.7fr_0.7fr_0.8fr_1fr] gap-3 border-b border-white/10 px-5 py-3 text-[11px] tracking-[0.14em] text-white/40 uppercase md:grid">
+          <div className="hidden grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr_1fr_auto] gap-3 border-b border-white/10 px-5 py-3 text-[11px] tracking-[0.14em] text-white/40 uppercase md:grid">
             <span>Name</span>
             <span>Nasdaq</span>
             <span>Quote</span>
             <span>Session</span>
             <span>Monad contract</span>
+            <span className="w-16" />
           </div>
           <ul>
             {visible.map((stock) => (
@@ -181,6 +184,7 @@ export function MarketsBoard() {
                 loading={pending.split(",").includes(stock.symbol) && !(stock.symbol in quotes)}
                 copied={copied === stock.address}
                 onCopy={() => copyAddress(stock.address)}
+                onTrade={() => setTrading(stock)}
               />
             ))}
           </ul>
@@ -208,6 +212,18 @@ export function MarketsBoard() {
           Next
         </button>
       </div>
+
+      {trading && (
+        <TradeDialog
+          target={{
+            symbol: trading.symbol,
+            name: trading.name.replace(/ xStock$/, ""),
+            logo: trading.logo,
+            address: trading.address,
+          }}
+          onClose={() => setTrading(null)}
+        />
+      )}
     </div>
   );
 }
@@ -218,17 +234,19 @@ function StockRow({
   loading,
   copied,
   onCopy,
+  onTrade,
 }: {
   stock: NasdaqXStock;
   quote: number | null | undefined;
   loading: boolean;
   copied: boolean;
   onCopy: () => void;
+  onTrade: () => void;
 }) {
   const status = stock.halted ? "Halted" : stock.openNow ? "Open" : "Closed";
 
   return (
-    <li className="grid gap-3 border-b border-white/10 px-4 py-4 last:border-b-0 md:grid-cols-[1.4fr_0.7fr_0.7fr_0.8fr_1fr] md:items-center md:px-5">
+    <li className="grid gap-3 border-b border-white/10 px-4 py-4 last:border-b-0 md:grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr_1fr_auto] md:items-center md:px-5">
       <div className="flex min-w-0 items-center gap-3">
         <Image
           src={stock.logo}
@@ -291,6 +309,14 @@ function StockRow({
           <ExternalLink className="size-3.5" />
         </a>
       </div>
+      <button
+        type="button"
+        onClick={onTrade}
+        disabled={stock.halted}
+        className="h-9 w-full rounded-full bg-gradient-to-r from-[#7c5cff] to-[#a855f7] px-4 text-sm font-medium text-white disabled:opacity-30 md:w-16 md:px-0"
+      >
+        Trade
+      </button>
     </li>
   );
 }

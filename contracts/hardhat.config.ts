@@ -8,6 +8,7 @@ export default defineConfig({
     version: "0.8.31",
     settings: {
       evmVersion: "osaka",
+      viaIR: true,
       optimizer: {
         enabled: true,
         runs: 200,
@@ -17,6 +18,10 @@ export default defineConfig({
   networks: {
     hardhat: {
       type: "edr-simulated",
+    },
+    localhost: {
+      type: "http",
+      url: "http://127.0.0.1:8545",
     },
     monadTestnet: {
       type: "http",

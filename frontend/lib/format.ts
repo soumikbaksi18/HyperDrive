@@ -33,3 +33,34 @@ export function formatCatalogDate(iso: string) {
     timeZoneName: "short",
   }).format(date);
 }
+
+export function formatSignedUsd(value: number) {
+  const sign = value > 0.004 ? "+" : value < -0.004 ? "−" : "";
+  return `${sign}${formatUsd(Math.abs(value))}`;
+}
+
+export function formatPct(value: number, signed = true) {
+  const sign = signed && value > 0.004 ? "+" : value < -0.004 ? "−" : "";
+  return `${sign}${Math.abs(value).toFixed(2)}%`;
+}
+
+export function formatShares(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: value >= 100 ? 2 : value >= 1 ? 4 : 6,
+  }).format(value);
+}
+
+export function pnlTone(value: number) {
+  if (value > 0.004) return "text-emerald-300";
+  if (value < -0.004) return "text-rose-300";
+  return "text-white/60";
+}
+
+export function formatDateTime(iso: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(iso));
+}
