@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "xstocks-metadata.backed.fi",
+        pathname: "/logos/tokens/**",
+      },
+    ],
+  },
   turbopack: {
     rules: {
       "*.css": {
