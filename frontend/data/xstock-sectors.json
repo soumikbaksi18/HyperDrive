@@ -1,0 +1,1379 @@
+{
+"AAL": [
+"Other"
+],
+"AAOI": [
+"Tech"
+],
+"AAON": [
+"Other"
+],
+"AAPL": [
+"Tech"
+],
+"ABNB": [
+"Consumer"
+],
+"ACGL": [
+"Financial"
+],
+"ADBE": [
+"Tech"
+],
+"ADI": [
+"Tech"
+],
+"ADP": [
+"Tech"
+],
+"ADSK": [
+"Tech"
+],
+"AEHR": [
+"Tech"
+],
+"AEIS": [
+"Tech"
+],
+"AEP": [
+"Energy"
+],
+"AFRM": [
+"Financial"
+],
+"AGNC": [
+"Financial",
+"Real Estate"
+],
+"AKAM": [
+"Tech"
+],
+"ALAB": [
+"Tech",
+"AI"
+],
+"ALGM": [
+"Tech"
+],
+"ALGN": [
+"Healthcare"
+],
+"ALM": [
+"Commodities"
+],
+"ALNY": [
+"Healthcare"
+],
+"AMAT": [
+"Tech"
+],
+"AMBA": [
+"Tech"
+],
+"AMBR": [
+"Other"
+],
+"AMD": [
+"Tech",
+"AI"
+],
+"AMGN": [
+"Healthcare"
+],
+"AMKR": [
+"Tech"
+],
+"AMZN": [
+"Tech",
+"AI",
+"Consumer"
+],
+"APA": [
+"Energy"
+],
+"APLD": [
+"AI",
+"Energy"
+],
+"APP": [
+"Tech",
+"AI"
+],
+"APPF": [
+"Tech"
+],
+"ARM": [
+"Tech",
+"AI"
+],
+"ARQQ": [
+"Tech"
+],
+"ARWR": [
+"Healthcare"
+],
+"ASML": [
+"Tech",
+"AI"
+],
+"ASTS": [
+"Tech"
+],
+"AUGO": [
+"Commodities"
+],
+"AUR": [
+"Tech",
+"AI"
+],
+"AVAV": [
+"Other"
+],
+"AVGO": [
+"Tech",
+"AI"
+],
+"AVT": [
+"Tech"
+],
+"AXON": [
+"Tech"
+],
+"AXSM": [
+"Healthcare"
+],
+"AXTI": [
+"Tech"
+],
+"BAOS": [
+"Other"
+],
+"BBIO": [
+"Healthcare"
+],
+"BETR": [
+"Financial"
+],
+"BHF": [
+"Financial"
+],
+"BIDU": [
+"Tech",
+"AI"
+],
+"BIIB": [
+"Healthcare"
+],
+"BILI": [
+"Tech"
+],
+"BKNG": [
+"Consumer"
+],
+"BKR": [
+"Energy"
+],
+"BMRN": [
+"Healthcare"
+],
+"BOKF": [
+"Financial"
+],
+"BOT": [
+"Other"
+],
+"BPOP": [
+"Financial"
+],
+"BRKR": [
+"Healthcare"
+],
+"BSP": [
+"Other"
+],
+"BSY": [
+"Tech"
+],
+"BTDR": [
+"Financial"
+],
+"BXBL": [
+"Other"
+],
+"CACC": [
+"Financial"
+],
+"CAI": [
+"Healthcare"
+],
+"CAPR": [
+"Healthcare"
+],
+"CAR": [
+"Consumer"
+],
+"CASY": [
+"Consumer"
+],
+"CBRS": [
+"Other"
+],
+"CBSH": [
+"Financial"
+],
+"CCC": [
+"Tech"
+],
+"CDNS": [
+"Tech"
+],
+"CDW": [
+"Tech"
+],
+"CEG": [
+"Energy"
+],
+"CELH": [
+"Consumer"
+],
+"CG": [
+"Financial"
+],
+"CGNX": [
+"Tech"
+],
+"CHAD": [
+"Other"
+],
+"CHDN": [
+"Consumer"
+],
+"CHRD": [
+"Energy"
+],
+"CHRW": [
+"Other"
+],
+"CHTR": [
+"Consumer"
+],
+"CHYM": [
+"Financial"
+],
+"CINF": [
+"Financial"
+],
+"CLSK": [
+"Financial"
+],
+"CMCSA": [
+"Consumer"
+],
+"CME": [
+"Financial"
+],
+"COIN": [
+"Financial"
+],
+"COLB": [
+"Financial"
+],
+"COLM": [
+"Consumer"
+],
+"COO": [
+"Healthcare"
+],
+"CORT": [
+"Healthcare"
+],
+"CORZ": [
+"Tech",
+"AI"
+],
+"COST": [
+"Consumer"
+],
+"CPB": [
+"Consumer"
+],
+"CPRT": [
+"Other"
+],
+"CRDO": [
+"Tech",
+"AI"
+],
+"CROX": [
+"Consumer"
+],
+"CRUS": [
+"Tech"
+],
+"CRWD": [
+"Tech"
+],
+"CRWV": [
+"Tech",
+"AI"
+],
+"CSCO": [
+"Tech"
+],
+"CSGP": [
+"Real Estate"
+],
+"CSIQ": [
+"Energy"
+],
+"CSX": [
+"Other"
+],
+"CTAS": [
+"Other"
+],
+"CTSH": [
+"Tech"
+],
+"CURR": [
+"Other"
+],
+"CZR": [
+"Consumer"
+],
+"DASH": [
+"Consumer"
+],
+"DAX": [
+"Other"
+],
+"DBX": [
+"Tech"
+],
+"DDOG": [
+"Tech"
+],
+"DFDV": [
+"Financial"
+],
+"DJT": [
+"Consumer"
+],
+"DKNG": [
+"Consumer"
+],
+"DLTR": [
+"Consumer"
+],
+"DNUT": [
+"Consumer"
+],
+"DOCU": [
+"Tech"
+],
+"DPZ": [
+"Consumer"
+],
+"DRS": [
+"Other"
+],
+"DUOL": [
+"Tech"
+],
+"DXCM": [
+"Healthcare"
+],
+"EBAY": [
+"Consumer"
+],
+"EEFT": [
+"Financial"
+],
+"ENPH": [
+"Energy"
+],
+"ENSG": [
+"Healthcare"
+],
+"ENTG": [
+"Tech"
+],
+"EQIX": [
+"Tech",
+"Real Estate"
+],
+"EVRG": [
+"Energy"
+],
+"EWBC": [
+"Financial"
+],
+"EXC": [
+"Energy"
+],
+"EXE": [
+"Energy"
+],
+"EXEL": [
+"Healthcare"
+],
+"EXLS": [
+"Tech"
+],
+"EXPE": [
+"Consumer"
+],
+"FAAA": [
+"Other"
+],
+"FANG": [
+"Energy"
+],
+"FAST": [
+"Other"
+],
+"FCNCA": [
+"Financial"
+],
+"FFIV": [
+"Tech"
+],
+"FHB": [
+"Financial"
+],
+"FIGR": [
+"Financial"
+],
+"FISV": [
+"Tech",
+"Financial"
+],
+"FIVE": [
+"Consumer"
+],
+"FLEX": [
+"Tech"
+],
+"FLNC": [
+"Energy"
+],
+"FLWS": [
+"Consumer"
+],
+"FORM": [
+"Tech"
+],
+"FRHC": [
+"Financial"
+],
+"FRMI": [
+"AI",
+"Energy",
+"Real Estate"
+],
+"FRPT": [
+"Consumer"
+],
+"FSLR": [
+"Energy"
+],
+"FTAI": [
+"Other"
+],
+"FTNT": [
+"Tech"
+],
+"FWDI": [
+"Financial"
+],
+"FWONK": [
+"Consumer"
+],
+"GEHC": [
+"Healthcare"
+],
+"GEN": [
+"Tech"
+],
+"GFS": [
+"Tech"
+],
+"GH": [
+"Healthcare"
+],
+"GILD": [
+"Healthcare"
+],
+"GLPI": [
+"Real Estate"
+],
+"GLXY": [
+"Financial"
+],
+"GNTX": [
+"Consumer"
+],
+"GOOGL": [
+"Tech",
+"AI"
+],
+"GPRO": [
+"Consumer"
+],
+"GRAB": [
+"Tech"
+],
+"GRPN": [
+"Consumer"
+],
+"GSAT": [
+"Tech"
+],
+"GTLB": [
+"Tech"
+],
+"HALO": [
+"Healthcare"
+],
+"HAS": [
+"Consumer"
+],
+"HBAN": [
+"Financial"
+],
+"HLNE": [
+"Financial"
+],
+"HON": [
+"Other"
+],
+"HONA": [
+"Other"
+],
+"HOOD": [
+"Financial"
+],
+"HPK": [
+"Energy"
+],
+"HQ": [
+"Other"
+],
+"HSIC": [
+"Healthcare"
+],
+"HST": [
+"Real Estate"
+],
+"HTZ": [
+"Consumer"
+],
+"HUT": [
+"Financial"
+],
+"IBKR": [
+"Financial"
+],
+"IBRX": [
+"Healthcare"
+],
+"IDXX": [
+"Healthcare"
+],
+"IEP": [
+"Financial"
+],
+"IESC": [
+"Other"
+],
+"ILMN": [
+"Healthcare"
+],
+"INCY": [
+"Healthcare"
+],
+"INDI": [
+"Tech"
+],
+"INSM": [
+"Healthcare"
+],
+"INTC": [
+"Tech"
+],
+"INTU": [
+"Tech"
+],
+"INTW": [
+"Tech"
+],
+"IONS": [
+"Healthcare"
+],
+"IPGP": [
+"Tech"
+],
+"IRDM": [
+"Tech"
+],
+"IREN": [
+"AI"
+],
+"ISRG": [
+"Healthcare"
+],
+"JACK": [
+"Consumer"
+],
+"JAZZ": [
+"Healthcare"
+],
+"JBHT": [
+"Other"
+],
+"JKHY": [
+"Tech"
+],
+"KDP": [
+"Consumer"
+],
+"KHC": [
+"Consumer"
+],
+"KLAC": [
+"Tech"
+],
+"KMB": [
+"Consumer"
+],
+"KPTI": [
+"Healthcare"
+],
+"KRAQ": [
+"Other"
+],
+"KTOS": [
+"Other"
+],
+"LAMR": [
+"Real Estate"
+],
+"LASE": [
+"Tech"
+],
+"LBTYA": [
+"Consumer"
+],
+"LCID": [
+"Consumer"
+],
+"LECO": [
+"Other"
+],
+"LENZ": [
+"Healthcare"
+],
+"LFUS": [
+"Tech"
+],
+"LIN": [
+"Commodities"
+],
+"LINE": [
+"Real Estate"
+],
+"LITE": [
+"Tech",
+"AI"
+],
+"LKQ": [
+"Consumer"
+],
+"LLYVK": [
+"Consumer"
+],
+"LNT": [
+"Energy"
+],
+"LOPE": [
+"Consumer"
+],
+"LPLA": [
+"Financial"
+],
+"LRCX": [
+"Tech"
+],
+"LSCC": [
+"Tech"
+],
+"LSTR": [
+"Other"
+],
+"LULU": [
+"Consumer"
+],
+"LUNR": [
+"Other"
+],
+"LYFT": [
+"Consumer"
+],
+"MANH": [
+"Tech"
+],
+"MAR": [
+"Consumer"
+],
+"MARA": [
+"Financial"
+],
+"MAT": [
+"Consumer"
+],
+"MCHP": [
+"Tech"
+],
+"MDB": [
+"Tech"
+],
+"MDGL": [
+"Healthcare"
+],
+"MDLN": [
+"Healthcare"
+],
+"MDLZ": [
+"Consumer"
+],
+"MEDP": [
+"Healthcare"
+],
+"META": [
+"Tech",
+"AI"
+],
+"METC": [
+"Commodities"
+],
+"MFP": [
+"Other"
+],
+"MIDD": [
+"Other"
+],
+"MKSI": [
+"Tech"
+],
+"MKTX": [
+"Financial"
+],
+"MNST": [
+"Consumer"
+],
+"MORN": [
+"Financial"
+],
+"MPWR": [
+"Tech"
+],
+"MRLN": [
+"Other"
+],
+"MRNA": [
+"Healthcare"
+],
+"MRVL": [
+"Tech",
+"AI"
+],
+"MSFT": [
+"Tech",
+"AI"
+],
+"MSTR": [
+"Financial"
+],
+"MTCH": [
+"Consumer"
+],
+"MTSI": [
+"Tech"
+],
+"MU": [
+"Tech",
+"AI"
+],
+"MUU": [
+"Other"
+],
+"MVLL": [
+"Other"
+],
+"NBIS": [
+"Tech",
+"AI"
+],
+"NBIX": [
+"Healthcare"
+],
+"NDAQ": [
+"Financial"
+],
+"NDSN": [
+"Other"
+],
+"NEGG": [
+"Consumer"
+],
+"NFLX": [
+"Consumer"
+],
+"NNE": [
+"Energy"
+],
+"NTAP": [
+"Tech"
+],
+"NTES": [
+"Tech"
+],
+"NTLA": [
+"Healthcare"
+],
+"NTNX": [
+"Tech"
+],
+"NTRA": [
+"Healthcare"
+],
+"NTRS": [
+"Financial"
+],
+"NUAI": [
+"AI"
+],
+"NVDA": [
+"Tech",
+"AI"
+],
+"NVDL": [
+"AI"
+],
+"NWS": [
+"Consumer"
+],
+"NWSA": [
+"Consumer"
+],
+"NXST": [
+"Consumer"
+],
+"ODFL": [
+"Other"
+],
+"OKTA": [
+"Tech"
+],
+"OLED": [
+"Tech"
+],
+"OLLI": [
+"Consumer"
+],
+"ON": [
+"Tech"
+],
+"ONDS": [
+"Other"
+],
+"OPEN": [
+"Real Estate"
+],
+"ORLY": [
+"Consumer"
+],
+"OZK": [
+"Financial"
+],
+"PANW": [
+"Tech"
+],
+"PAYX": [
+"Tech"
+],
+"PCAR": [
+"Other"
+],
+"PCT": [
+"Commodities"
+],
+"PCTY": [
+"Tech"
+],
+"PEGA": [
+"Tech"
+],
+"PENG": [
+"Tech"
+],
+"PEP": [
+"Consumer"
+],
+"PFG": [
+"Financial"
+],
+"PLCE": [
+"Consumer"
+],
+"PLTR": [
+"Tech",
+"AI"
+],
+"PODD": [
+"Healthcare"
+],
+"POOL": [
+"Consumer"
+],
+"POWL": [
+"Energy"
+],
+"PPC": [
+"Commodities",
+"Consumer"
+],
+"PPLI": [
+"Other"
+],
+"PROK": [
+"Healthcare"
+],
+"PTC": [
+"Tech"
+],
+"PYPL": [
+"Financial"
+],
+"QCOM": [
+"Tech"
+],
+"QNT": [
+"Other"
+],
+"QQQ": [
+"Other"
+],
+"QRVO": [
+"Tech"
+],
+"QS": [
+"Tech",
+"Energy"
+],
+"QUBT": [
+"Tech"
+],
+"QURE": [
+"Healthcare"
+],
+"QYLD": [
+"Other"
+],
+"RCAT": [
+"Other"
+],
+"REG": [
+"Real Estate"
+],
+"REGN": [
+"Healthcare"
+],
+"REYN": [
+"Consumer"
+],
+"RGEN": [
+"Healthcare"
+],
+"RGLD": [
+"Commodities"
+],
+"RIOT": [
+"Financial"
+],
+"RIVN": [
+"Consumer"
+],
+"RKLB": [
+"Other"
+],
+"RMBS": [
+"Tech"
+],
+"ROIV": [
+"Healthcare"
+],
+"ROKU": [
+"Consumer"
+],
+"ROP": [
+"Tech"
+],
+"ROST": [
+"Consumer"
+],
+"RPRX": [
+"Healthcare"
+],
+"RVMD": [
+"Healthcare"
+],
+"RXRX": [
+"AI",
+"Healthcare"
+],
+"RXT": [
+"Tech"
+],
+"SAIA": [
+"Other"
+],
+"SAIC": [
+"Tech"
+],
+"SAIL": [
+"Tech"
+],
+"SANM": [
+"Tech"
+],
+"SATA": [
+"Other"
+],
+"SBAC": [
+"Real Estate"
+],
+"SBET": [
+"Financial"
+],
+"SBUX": [
+"Consumer"
+],
+"SEIC": [
+"Financial"
+],
+"SERV": [
+"Tech",
+"AI"
+],
+"SFD": [
+"Consumer"
+],
+"SFM": [
+"Consumer"
+],
+"SHAZ": [
+"Other"
+],
+"SHC": [
+"Healthcare"
+],
+"SHOE": [
+"Other"
+],
+"SHOP": [
+"Tech"
+],
+"SIMO": [
+"Tech"
+],
+"SIRI": [
+"Consumer"
+],
+"SITM": [
+"Tech"
+],
+"SKDD": [
+"Other"
+],
+"SKHY": [
+"Other"
+],
+"SKUU": [
+"Other"
+],
+"SLM": [
+"Financial"
+],
+"SLMT": [
+"Other"
+],
+"SMCI": [
+"Tech",
+"AI"
+],
+"SMH": [
+"Tech",
+"AI"
+],
+"SMMT": [
+"Healthcare"
+],
+"SMTC": [
+"Tech"
+],
+"SNDK": [
+"Tech",
+"AI"
+],
+"SNPS": [
+"Tech"
+],
+"SOFI": [
+"Financial"
+],
+"SOLS": [
+"Other"
+],
+"SOUN": [
+"Tech",
+"AI"
+],
+"SOXX": [
+"Tech",
+"AI"
+],
+"SPCX": [
+"Other"
+],
+"SPRY": [
+"Healthcare"
+],
+"SQQQ": [
+"Other"
+],
+"SSNC": [
+"Tech",
+"Financial"
+],
+"STLD": [
+"Commodities"
+],
+"STRC": [
+"Financial"
+],
+"STRK": [
+"Financial"
+],
+"STRL": [
+"Other"
+],
+"SVRA": [
+"Healthcare"
+],
+"TBCH": [
+"Other"
+],
+"TEAM": [
+"Tech"
+],
+"TEM": [
+"Tech",
+"AI"
+],
+"TER": [
+"Tech"
+],
+"TFSL": [
+"Financial"
+],
+"TLN": [
+"Energy"
+],
+"TMUS": [
+"Tech"
+],
+"TNGX": [
+"Healthcare"
+],
+"TONX": [
+"Financial"
+],
+"TPG": [
+"Financial"
+],
+"TQQQ": [
+"Other"
+],
+"TRMB": [
+"Tech"
+],
+"TRON": [
+"Financial"
+],
+"TROW": [
+"Financial"
+],
+"TSCO": [
+"Consumer"
+],
+"TSEM": [
+"Tech"
+],
+"TSLA": [
+"Consumer"
+],
+"TSLL": [
+"Other"
+],
+"TTD": [
+"Tech"
+],
+"TTEK": [
+"Other"
+],
+"TTMI": [
+"Tech"
+],
+"TTWO": [
+"Consumer"
+],
+"TW": [
+"Financial"
+],
+"TWST": [
+"Healthcare"
+],
+"TXN": [
+"Tech"
+],
+"TXRH": [
+"Consumer"
+],
+"UAL": [
+"Other"
+],
+"ULTA": [
+"Consumer"
+],
+"USAR": [
+"Commodities"
+],
+"UTHR": [
+"Healthcare"
+],
+"VELO": [
+"Tech"
+],
+"VIAV": [
+"Tech"
+],
+"VICR": [
+"Tech"
+],
+"VKTX": [
+"Healthcare"
+],
+"VNOM": [
+"Energy"
+],
+"VRSK": [
+"Tech"
+],
+"VRSN": [
+"Tech"
+],
+"VRTX": [
+"Healthcare"
+],
+"VSNT": [
+"Other"
+],
+"VTRS": [
+"Healthcare"
+],
+"VXUS": [
+"Other"
+],
+"WBD": [
+"Consumer"
+],
+"WDAY": [
+"Tech"
+],
+"WDC": [
+"Tech"
+],
+"WEN": [
+"Consumer"
+],
+"WGS": [
+"Healthcare"
+],
+"WING": [
+"Consumer"
+],
+"WKHS": [
+"Consumer"
+],
+"WMT": [
+"Consumer"
+],
+"WRLD": [
+"Financial"
+],
+"WSC": [
+"Other"
+],
+"WTFC": [
+"Financial"
+],
+"WTW": [
+"Financial"
+],
+"WULF": [
+"AI"
+],
+"WWD": [
+"Other"
+],
+"WYFI": [
+"Other"
+],
+"WYNN": [
+"Consumer"
+],
+"XE": [
+"Other"
+],
+"XEL": [
+"Energy"
+],
+"XP": [
+"Financial"
+],
+"XRX": [
+"Tech"
+],
+"YLDE": [
+"Other"
+],
+"Z": [
+"Real Estate"
+],
+"ZBIO": [
+"Healthcare"
+],
+"ZBRA": [
+"Tech"
+],
+"ZION": [
+"Financial"
+],
+"ZM": [
+"Tech"
+],
+"ZS": [
+"Tech"
+]
+}

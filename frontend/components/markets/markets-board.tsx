@@ -1,21 +1,51 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
+import { ExchangeFilter, SectorFilter } from "@/components/markets/sector-filter";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTradable } from "@/lib/api";
 import { TradeDialog } from "@/components/trade/trade-dialog";
 import { formatCatalogDate, formatUsd, shortAddress } from "@/lib/format";
 import { cn } from "@/lib/cn";
-import { nasdaqCatalog, type NasdaqXStock } from "@/lib/xstocks";
+import {
+  exchangeGroup,
+  isExchangeGroup,
+  isSector,
+  nasdaqCatalog,
+  sectorsFor,
+  type ExchangeGroup,
+  type NasdaqXStock,
+  type Sector,
+} from "@/lib/xstocks";
 
 const PAGE_SIZE = 12;
 
-type SessionFilter = "all" | "open" | "halted";
+type SessionFilter = "all" | "tradable" | "open" | "halted";
 
 export function MarketsBoard() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const initialQuery = searchParams.get("q") ?? "";
+  const sectorParam = searchParams.get("sector");
+  const [sector, setSectorState] = useState<Sector | null>(isSector(sectorParam) ? sectorParam : null);
+  const exchangeParam = searchParams.get("exchange");
+  const [exchange, setExchangeState] = useState<ExchangeGroup | null>(
+    isExchangeGroup(exchangeParam) ? exchangeParam : null,
+  );
+  const tradableQuery = useQuery({
+    queryKey: ["tradable"],
+    queryFn: fetchTradable,
+    // The first backend scan fills in progressively; poll faster until it completes.
+    refetchInterval: (query) => (query.state.data?.complete ? 5 * 60_000 : 10_000),
+    retry: false,
+  });
+  const tradableSymbols = tradableQuery.data?.symbols;
+  const tradable = useMemo(() => tradableSymbols ?? {}, [tradableSymbols]);
+  const tradableReady = Boolean(tradableQuery.data?.complete);
   const [query, setQuery] = useState(initialQuery);
   const [filter, setFilter] = useState<SessionFilter>("all");
   const [page, setPage] = useState(0);
@@ -32,9 +62,33 @@ export function MarketsBoard() {
     setPage(0);
   }
 
+  // Keep filters in the URL so a filtered view can be bookmarked or shared.
+  const syncParam = (key: string, next: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next) params.set(key, next);
+    else params.delete(key);
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+
+  const setSector = (next: Sector | null) => {
+    setSectorState(next);
+    setPage(0);
+    syncParam("sector", next);
+  };
+
+  const setExchange = (next: ExchangeGroup | null) => {
+    setExchangeState(next);
+    setPage(0);
+    syncParam("exchange", next);
+  };
+
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return nasdaqCatalog.stocks.filter((stock) => {
+      if (sector && !sectorsFor(stock.underlying).includes(sector)) return false;
+      if (exchange && exchangeGroup(stock) !== exchange) return false;
+      if (filter === "tradable" && !(stock.symbol in tradable)) return false;
       if (filter === "halted" && !stock.halted) return false;
       if (filter === "open" && (stock.halted || !stock.openNow)) return false;
       if (!needle) return true;
@@ -44,7 +98,7 @@ export function MarketsBoard() {
         stock.underlying.toLowerCase().includes(needle)
       );
     });
-  }, [filter, query]);
+  }, [filter, query, sector, exchange, tradable]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
@@ -106,18 +160,27 @@ export function MarketsBoard() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold tracking-[0.16em] text-violet-300 uppercase">
-            Nasdaq on Monad
+            xStocks on Monad
           </p>
           <h1 className="mt-1 text-3xl font-medium tracking-tight">xStocks markets</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/55">
-            {nasdaqCatalog.count} Nasdaq-listed names with a Monad deployment in
-            the xStocks public catalog, read {formatCatalogDate(nasdaqCatalog.fetchedAt)}.
-            Quotes are the latest xStocks price-data figure and are not an
-            executable offer.
+            {nasdaqCatalog.count} tokenized stocks and ETFs (Nasdaq, NYSE, London,
+            Hong Kong and more) with a Monad deployment in the xStocks public catalog,
+            read {formatCatalogDate(nasdaqCatalog.fetchedAt)}. Quotes are the latest
+            xStocks price-data figure. Only assets marked{" "}
+            <span className="text-emerald-200">Tradable</span> have on-chain USDC
+            liquidity on Monad you can buy into from MetaMask
+            {tradableQuery.data
+              ? tradableReady
+                ? ` (${Object.keys(tradable).length} right now).`
+                : ` (checking ${tradableQuery.data.checked}/${tradableQuery.data.total}…).`
+              : "."}
           </p>
         </div>
         <p className="text-sm text-white/45">
           {filtered.length} shown
+          {sector ? ` in ${sector}` : ""}
+          {exchange ? ` on ${exchange}` : ""}
           {query.trim() ? ` for “${query.trim()}”` : ""}
         </p>
       </header>
@@ -135,10 +198,14 @@ export function MarketsBoard() {
             className="h-11 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm outline-none placeholder:text-white/30 focus:border-violet-300/40"
           />
         </label>
-        <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1 text-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <ExchangeFilter value={exchange} onChange={setExchange} className="w-full sm:w-auto" />
+        <SectorFilter value={sector} onChange={setSector} className="w-full sm:w-auto" />
+        <div className="flex w-fit rounded-full border border-white/10 bg-white/[0.03] p-1 text-sm">
           {(
             [
               ["all", "All"],
+              ["tradable", "Tradable now"],
               ["open", "Session open"],
               ["halted", "Halted"],
             ] as const
@@ -159,17 +226,32 @@ export function MarketsBoard() {
             </button>
           ))}
         </div>
+        </div>
       </div>
 
       {visible.length === 0 ? (
         <div className="app-card rounded-3xl px-6 py-16 text-center text-sm text-white/50">
-          No Nasdaq xStock matches that search.
+          No Nasdaq xStock matches {sector ? `“${sector}” with ` : ""}these filters.
+          {(sector || query.trim() || filter !== "all") && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setFilter("all");
+                setSector(null);
+                setExchange(null);
+              }}
+              className="mt-4 block w-full text-violet-200 underline-offset-4 hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="app-card overflow-hidden rounded-3xl">
           <div className="hidden grid-cols-[1.4fr_0.6fr_0.7fr_0.7fr_1fr_auto] gap-3 border-b border-white/10 px-5 py-3 text-[11px] tracking-[0.14em] text-white/40 uppercase md:grid">
             <span>Name</span>
-            <span>Nasdaq</span>
+            <span>Listing</span>
             <span>Quote</span>
             <span>Session</span>
             <span>Monad contract</span>
@@ -185,6 +267,7 @@ export function MarketsBoard() {
                 copied={copied === stock.address}
                 onCopy={() => copyAddress(stock.address)}
                 onTrade={() => setTrading(stock)}
+                tradable={tradableReady ? stock.symbol in tradable : stock.symbol in tradable ? true : null}
               />
             ))}
           </ul>
@@ -221,6 +304,7 @@ export function MarketsBoard() {
             logo: trading.logo,
             address: trading.address,
           }}
+          tradable={tradableReady ? trading.symbol in tradable : trading.symbol in tradable ? true : null}
           onClose={() => setTrading(null)}
         />
       )}
@@ -235,6 +319,7 @@ function StockRow({
   copied,
   onCopy,
   onTrade,
+  tradable,
 }: {
   stock: NasdaqXStock;
   quote: number | null | undefined;
@@ -242,6 +327,8 @@ function StockRow({
   copied: boolean;
   onCopy: () => void;
   onTrade: () => void;
+  /** true = USDC route exists, false = none, null = scan not finished */
+  tradable: boolean | null;
 }) {
   const status = stock.halted ? "Halted" : stock.openNow ? "Open" : "Closed";
 
@@ -257,10 +344,20 @@ function StockRow({
         />
         <div className="min-w-0">
           <p className="truncate font-medium">{stock.name.replace(/ xStock$/, "")}</p>
-          <p className="font-mono text-xs text-violet-200">{stock.symbol}</p>
+          <p className="flex items-center gap-2 font-mono text-xs text-violet-200">
+            {stock.symbol}
+            {tradable && (
+              <span className="rounded-full bg-emerald-300/15 px-1.5 py-px font-sans text-[10px] font-medium text-emerald-200">
+                Tradable
+              </span>
+            )}
+          </p>
         </div>
       </div>
-      <p className="text-sm text-white/70">{stock.underlying}</p>
+      <p className="text-sm text-white/70">
+        {stock.underlying}
+        <span className="block text-[11px] text-white/35">{stock.exchange}</span>
+      </p>
       <p className="text-sm font-medium tabular-nums">
         {loading || quote === undefined ? (
           <span className="text-white/35">Loading…</span>

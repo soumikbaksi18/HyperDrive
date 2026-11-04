@@ -10,6 +10,7 @@ import {
   PanelLeftOpen,
   PieChart,
   Search,
+  Sparkles,
   TrendingUp,
   X,
 } from "lucide-react";
@@ -36,6 +37,12 @@ const NAV = [
     label: "Markets",
     subtitle: "Nasdaq xStocks on Monad",
     icon: TrendingUp,
+  },
+  {
+    href: "/insights",
+    label: "Insights",
+    subtitle: "News and sentiment",
+    icon: Sparkles,
   },
 ];
 
@@ -85,7 +92,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             { label: "Dashboard", href: "/dashboard" },
             { label: "Portfolio" },
           ]
-        : [{ label: "Dashboard" }];
+        : pathname.startsWith("/insights")
+          ? [
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Insights" },
+            ]
+          : [{ label: "Dashboard" }];
 
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();

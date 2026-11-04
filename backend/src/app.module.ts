@@ -9,6 +9,7 @@ import { HealthModule } from './health/health.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { SwapsModule } from './swaps/swaps.module';
+import { NewsModule } from './news/news.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SwapsModule } from './swaps/swaps.module';
     QuotesModule,
     PortfolioModule,
     SwapsModule,
+    NewsModule,
     HealthModule,
   ],
   controllers: [AppController],

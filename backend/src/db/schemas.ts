@@ -87,3 +87,38 @@ export class PortfolioSnapshot {
 }
 export const PortfolioSnapshotSchema = SchemaFactory.createForClass(PortfolioSnapshot);
 PortfolioSnapshotSchema.index({ wallet: 1, at: 1 });
+
+/** Cached market headline (NewsData / NewsAPI batch). */
+@Schema({ collection: 'news_articles', timestamps: true })
+export class NewsArticleDoc {
+  @Prop({ required: true, unique: true }) url!: string;
+  @Prop({ required: true }) headline!: string;
+  @Prop({ required: true, default: '' }) summary!: string;
+  @Prop({ required: true }) time!: string;
+  @Prop({ required: true }) dateLabel!: string;
+  @Prop({ type: [String], required: true, default: [] }) tickers!: string[];
+  @Prop({ type: [String], required: true, default: [] }) xSymbols!: string[];
+  @Prop({ required: true }) impact!: number;
+  @Prop({ required: true, enum: ['up', 'down', 'neutral'] }) sentiment!: 'up' | 'down' | 'neutral';
+  @Prop({ required: true }) category!: string;
+  @Prop({ required: true }) source!: string;
+  @Prop({ required: true }) publishedAt!: Date;
+  @Prop({ required: true, default: 'newsdata' }) upstream!: string;
+  @Prop({ required: true }) fetchedAt!: Date;
+}
+export type NewsArticleDocDocument = HydratedDocument<NewsArticleDoc>;
+export const NewsArticleDocSchema = SchemaFactory.createForClass(NewsArticleDoc);
+NewsArticleDocSchema.index({ publishedAt: -1 });
+
+@Schema({ collection: 'news_sync_state' })
+export class NewsSyncState {
+  @Prop({ required: true, unique: true }) id!: string;
+  @Prop() lastAttemptAt?: Date;
+  @Prop() lastSuccessAt?: Date;
+  @Prop({ required: true, default: 'empty' }) lastStatus!: string;
+  @Prop() lastError?: string;
+  @Prop({ default: 0 }) articleCount!: number;
+  @Prop() lastSource?: string;
+}
+export type NewsSyncStateDocument = HydratedDocument<NewsSyncState>;
+export const NewsSyncStateSchema = SchemaFactory.createForClass(NewsSyncState);

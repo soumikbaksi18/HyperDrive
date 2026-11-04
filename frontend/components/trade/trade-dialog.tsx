@@ -40,10 +40,13 @@ function errorText(error: unknown) {
 export function TradeDialog({
   target,
   initialSide = "buy",
+  tradable = null,
   onClose,
 }: {
   target: TradeTarget;
   initialSide?: TradeSide;
+  /** DEX mode only: false = no USDC liquidity for this asset on Monad (from the backend scan). */
+  tradable?: boolean | null;
   onClose: () => void;
 }) {
   const { address, chainId } = useAccount();
@@ -310,6 +313,7 @@ export function TradeDialog({
   const numeric = Number(amount);
   const insufficient = maxAmount != null && numeric > maxAmount;
   const belowMin = side === "buy" && numeric > 0 && numeric < 1;
+  const noLiquidity = dexMode && tradable === false;
   const explorer = txHash ? explorerTx(txHash) : null;
 
   return (
@@ -460,6 +464,19 @@ export function TradeDialog({
               </dl>
             )}
 
+            {noLiquidity && (
+              <div className="mt-4 rounded-2xl border border-amber-200/20 bg-amber-200/[0.06] p-3 text-xs leading-relaxed text-amber-100/90">
+                <p className="font-medium text-amber-100">No on-chain liquidity for {target.symbol} on Monad yet</p>
+                <p className="mt-1">
+                  The token exists on Monad, but no DEX pool trades it against USDC, so a wallet
+                  can&apos;t buy it right now. New {target.symbol} is minted only by the issuer for
+                  KYC-onboarded clients (xStocks xChange), or you can buy on a supporting exchange and
+                  withdraw to Monad. Filter Markets by <span className="text-emerald-200">Tradable now</span>{" "}
+                  for assets you can buy here.
+                </p>
+              </div>
+            )}
+
             {error && <p className="mt-3 text-sm text-amber-200">{error}</p>}
             {desk.data && !desk.data.configured && (
               <p className="mt-3 text-sm text-amber-200">The trading desk isn&apos;t configured on the backend yet.</p>
@@ -467,7 +484,7 @@ export function TradeDialog({
 
             <button
               type="button"
-              disabled={busy || step === "submitted" || !address || !amount || numeric <= 0 || !deskConfig || insufficient || belowMin}
+              disabled={busy || step === "submitted" || !address || !amount || numeric <= 0 || !deskConfig || insufficient || belowMin || (noLiquidity && side === "buy")}
               onClick={quote && !expired && step === "quoted" ? () => void (isSwap(quote) ? executeSwap(quote) : execute(quote)) : getQuote}
               className={cn(
                 "mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-medium disabled:opacity-40",

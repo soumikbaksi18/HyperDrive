@@ -40,4 +40,8 @@ export class CatalogService {
   byAddressOrNull(address: string) {
     return this.byAddress.get(address.toLowerCase()) ?? null;
   }
+
+  allStocks(): CatalogStock[] {
+    return [...this.bySymbol.values()];
+  }
 }

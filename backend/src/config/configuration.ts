@@ -21,6 +21,10 @@ export type AppConfig = {
   indexerBlockRange: number;
   catalogPath: string;
   snapshotIntervalMs: number;
+  newsDataApiKey: string | null;
+  newsApiKey: string | null;
+  newsCacheTtlMs: number;
+  newsBatchSize: number;
 };
 
 function num(value: string | undefined, fallback: number) {
@@ -59,8 +63,12 @@ export function loadConfig(): AppConfig {
     indexerEnabled: (env.INDEXER_ENABLED ?? 'true') !== 'false',
     indexerPollMs: num(env.INDEXER_POLL_MS, 4_000),
     indexerBlockRange: num(env.INDEXER_BLOCK_RANGE, 100),
-    catalogPath: env.CATALOG_PATH ?? '../frontend/data/nasdaq-monad-xstocks.json',
+    catalogPath: env.CATALOG_PATH ?? '../frontend/data/monad-xstocks.json',
     snapshotIntervalMs: num(env.SNAPSHOT_INTERVAL_MS, 15 * 60_000),
+    newsDataApiKey: env.NEWS_DATA_API_KEY?.trim() || null,
+    newsApiKey: env.NEWS_API_KEY?.trim() || null,
+    newsCacheTtlMs: num(env.NEWS_CACHE_TTL_MS, 6 * 60 * 60 * 1000),
+    newsBatchSize: num(env.NEWS_BATCH_SIZE, 30),
   };
 }
 

@@ -4,6 +4,8 @@ import {
   Inject,
   Injectable,
   Logger,
+  OnApplicationBootstrap,
+  OnModuleDestroy,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { formatUnits, getAddress, isAddress, parseUnits, type Address, type Hex } from 'viem';
@@ -28,8 +30,12 @@ type KyberRoute = {
  * The user's wallet signs and sends the router call; nothing is custodied by Hyperdrive.
  */
 @Injectable()
-export class SwapsService {
+export class SwapsService implements OnApplicationBootstrap, OnModuleDestroy {
   private readonly logger = new Logger(SwapsService.name);
+  /** symbol -> implied $ per share from a $1 USDC route, for assets with DEX liquidity on Monad. */
+  private tradable = new Map<string, number>();
+  private scan = { startedAt: null as Date | null, finishedAt: null as Date | null, checked: 0, total: 0 };
+  private scanTimer: NodeJS.Timeout | null = null;
 
   constructor(
     @Inject(APP_CONFIG) private readonly config: AppConfig,
@@ -40,6 +46,65 @@ export class SwapsService {
 
   get enabled() {
     return Boolean(KYBER_CHAIN[this.chain.chainId]);
+  }
+
+  onApplicationBootstrap() {
+    if (!this.enabled) return;
+    void this.scanTradable();
+    this.scanTimer = setInterval(() => void this.scanTradable(), 30 * 60_000);
+  }
+
+  onModuleDestroy() {
+    if (this.scanTimer) clearInterval(this.scanTimer);
+  }
+
+  /** Which catalog assets currently have a USDC route on Monad (refreshed every 30 min). */
+  tradableStatus() {
+    return {
+      venue: 'KyberSwap',
+      complete: this.scan.finishedAt != null,
+      scannedAt: this.scan.finishedAt,
+      checked: this.scan.checked,
+      total: this.scan.total,
+      symbols: Object.fromEntries(this.tradable),
+    };
+  }
+
+  private async scanTradable() {
+    const network = KYBER_CHAIN[this.chain.chainId];
+    if (!network || (this.scan.startedAt && !this.scan.finishedAt)) return;
+    const stocks = this.catalog.allStocks();
+    const found = new Map<string, number>();
+    this.scan = { startedAt: new Date(), finishedAt: null, checked: 0, total: stocks.length };
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < stocks.length) {
+        const stock = stocks[cursor++];
+        for (let attempt = 0; attempt < 4; attempt++) {
+          const res = await fetch(
+            `${KYBER}/${network}/api/v1/routes?tokenIn=${this.config.usdcAddress}&tokenOut=${stock.address}&amountIn=1000000`,
+            { headers: { 'x-client-id': 'hyperdrive' } },
+          ).catch(() => null);
+          const json = (await res?.json().catch(() => null)) as
+            | { code?: number; message?: string; data?: { routeSummary?: { amountOut?: string } } }
+            | null;
+          const out = json?.code === 0 ? json.data?.routeSummary?.amountOut : undefined;
+          if (out && out !== '0') {
+            found.set(stock.symbol, 1 / Number(formatUnits(BigInt(out), XSTOCK_DECIMALS)));
+            break;
+          }
+          if (json && /route not found|token not found/i.test(json.message ?? '')) break;
+          await new Promise((r) => setTimeout(r, 800 * (attempt + 1))); // rate-limited or flaky: back off
+        }
+        this.scan.checked += 1;
+        // Publish progress as it goes, so the UI fills in during the first scan.
+        if (found.has(stock.symbol)) this.tradable.set(stock.symbol, found.get(stock.symbol)!);
+      }
+    };
+    await Promise.all(Array.from({ length: 4 }, worker));
+    this.tradable = found;
+    this.scan.finishedAt = new Date();
+    this.logger.log(`DEX scan: ${found.size}/${stocks.length} assets have a USDC route on Monad`);
   }
 
   async quote(req: { trader: string; symbol: string; side: TradeSide; amount: string }) {
