@@ -1,0 +1,26 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Monad EVM smart contracts (Hardhat 3)",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "clean": "hardhat clean",
+    "deploy:local": "hardhat run scripts/deploy-counter.ts",
+    "deploy:testnet": "hardhat run scripts/deploy-counter.ts --network monadTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy-counter.ts --network monadMainnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition-viem": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "@nomicfoundation/hardhat-toolbox-viem": "^1.0.0",
+    "@types/node": "^26.6.6",
+    "dotenv": "^18.0.9",
+    "hardhat": "^3.21.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2",
+    "viem": "^2.31.0"
+  }
+}
