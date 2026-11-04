@@ -11,6 +11,8 @@ export type CatalogStock = {
   logo: string;
   address: Address;
   halted: boolean;
+  exchangeMic?: string;
+  exchange?: string;
 };
 
 /** The Nasdaq-on-Monad xStocks list, shared with the frontend (frontend/data). */
@@ -19,6 +21,7 @@ export class CatalogService {
   private readonly logger = new Logger(CatalogService.name);
   private readonly bySymbol = new Map<string, CatalogStock>();
   private readonly byAddress = new Map<string, CatalogStock>();
+  private readonly sectors = new Map<string, string[]>();
 
   constructor(@Inject(APP_CONFIG) config: AppConfig) {
     const file = path.resolve(process.cwd(), config.catalogPath);
@@ -30,7 +33,14 @@ export class CatalogService {
       this.bySymbol.set(stock.symbol.toUpperCase(), stock);
       this.byAddress.set(stock.address.toLowerCase(), stock);
     }
-    this.logger.log(`Loaded ${this.bySymbol.size} xStocks from ${file}`);
+    try {
+      const sectorFile = path.join(path.dirname(file), 'xstock-sectors.json');
+      const map = JSON.parse(readFileSync(sectorFile, 'utf8')) as Record<string, string[]>;
+      for (const [ticker, tags] of Object.entries(map)) this.sectors.set(ticker.toUpperCase(), tags);
+    } catch (error) {
+      this.logger.warn(`No sector map loaded: ${(error as Error).message}`);
+    }
+    this.logger.log(`Loaded ${this.bySymbol.size} xStocks from ${file} (${this.sectors.size} sector-tagged)`);
   }
 
   bySymbolOrNull(symbol: string) {
@@ -39,6 +49,11 @@ export class CatalogService {
 
   byAddressOrNull(address: string) {
     return this.byAddress.get(address.toLowerCase()) ?? null;
+  }
+
+  /** Curated sector tags for an underlying ticker (frontend/data/xstock-sectors.json). */
+  sectorsFor(underlying: string): string[] {
+    return this.sectors.get(underlying.toUpperCase()) ?? ['Other'];
   }
 
   allStocks(): CatalogStock[] {

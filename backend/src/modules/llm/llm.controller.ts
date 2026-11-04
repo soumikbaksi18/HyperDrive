@@ -15,6 +15,12 @@ export class LLMController {
     };
   }
 
+  /** Model picker for the AI trading form: every provider/model, with whether its key is set. */
+  @Get('models')
+  models() {
+    return { default: this.llmService.defaultModelId(), models: this.llmService.models() };
+  }
+
   @Post('test')
   async testGeneration(@Body() body: { prompt: string }) {
     const { prompt } = body;

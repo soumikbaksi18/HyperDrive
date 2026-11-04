@@ -1,10 +1,38 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
-import { UnifiedAgentService } from './unified-agent.service';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { ArrayMaxSize, IsArray, IsBoolean, IsIn, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { StockData, AnalysisJob } from './agent.interface';
+import { BasketService, type Horizon, type RiskLevel } from './basket.service';
+import { UnifiedAgentService } from './unified-agent.service';
+
+export class BasketRequestDto {
+  @IsOptional() @IsString() wallet?: string;
+  @IsNumber() @Min(1) @Max(10_000_000) amountUsd!: number;
+  @IsIn(['conservative', 'moderate', 'aggressive']) risk!: RiskLevel;
+  @IsArray() @ArrayMaxSize(9) @IsString({ each: true }) buckets: string[] = [];
+  @IsIn(['swing', 'position', 'long']) horizon: Horizon = 'position';
+  @IsOptional() @IsString() modelId?: string | null;
+  @IsBoolean() useSentiment = true;
+  @IsBoolean() tradableOnly = false;
+  @IsInt() @Min(2) @Max(10) maxPositions = 5;
+}
 
 @Controller('agents')
 export class AgentsController {
-  constructor(private readonly agentService: UnifiedAgentService) {}
+  constructor(
+    private readonly agentService: UnifiedAgentService,
+    private readonly baskets: BasketService,
+  ) {}
+
+  /** The Trading engine form: amount + risk + buckets + model -> three suggested stock baskets. */
+  @Post('baskets')
+  suggestBaskets(@Body() body: BasketRequestDto) {
+    return this.baskets.suggest(body);
+  }
+
+  @Get('baskets/recent')
+  recentBaskets(@Query('wallet') wallet?: string, @Query('limit') limit?: string) {
+    return this.baskets.recent(wallet, Math.min(Math.max(Number(limit) || 10, 1), 50));
+  }
 
   @Post('analyze')
   async analyzeStock(

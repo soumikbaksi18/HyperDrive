@@ -122,3 +122,16 @@ export class NewsSyncState {
 }
 export type NewsSyncStateDocument = HydratedDocument<NewsSyncState>;
 export const NewsSyncStateSchema = SchemaFactory.createForClass(NewsSyncState);
+
+/** One AI basket-suggestion run (the Trading engine form submission and its result). */
+@Schema({ collection: 'agent_runs', timestamps: true })
+export class AgentRun {
+  @Prop({ lowercase: true, index: true }) wallet?: string;
+  @Prop({ required: true, type: Object }) request!: Record<string, unknown>;
+  @Prop({ required: true }) modelId!: string;
+  @Prop({ required: true }) status!: 'ok' | 'fallback' | 'error';
+  @Prop({ type: Object }) result?: Record<string, unknown>;
+  @Prop() error?: string;
+  @Prop({ required: true }) durationMs!: number;
+}
+export const AgentRunSchema = SchemaFactory.createForClass(AgentRun);

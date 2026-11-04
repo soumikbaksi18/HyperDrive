@@ -61,6 +61,26 @@ export class UnifiedAgentService {
     };
   }
 
+  /** Scores, recommendation and targets without an LLM call (reasoning is a short rule-based line). */
+  async scoreOnly(stockData: StockData, job: AnalysisJob): Promise<StockAnalysisResult> {
+    const sectorMetrics = this.calculateSectorMetrics(stockData, job.sector);
+    const scores = this.calculateScores(stockData, sectorMetrics);
+    const recommendation = this.determineRecommendation(scores.overall);
+    const confidence = this.calculateConfidence(stockData, scores);
+    return {
+      symbol: stockData.symbol,
+      sector: job.sector,
+      scores,
+      recommendation,
+      confidence,
+      reasoning: this.generateFallbackReasoning(stockData, recommendation, scores),
+      targets: this.calculateTargets(stockData, scores),
+      prediction: this.generatePrediction(stockData, scores, confidence),
+      sectorMetrics,
+      analyzedAt: new Date(),
+    };
+  }
+
   /**
    * Calculate sector-specific metrics based on the job type
    */

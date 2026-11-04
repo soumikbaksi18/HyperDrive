@@ -282,3 +282,115 @@ export type TradableStatus = {
 
 /** Which assets currently have USDC liquidity on Monad (backend scans every 30 min). */
 export const fetchTradable = () => request<TradableStatus>('/swap/tradable');
+
+// ---------------------------------------------------------------------------
+// Trading engine (AI baskets)
+// ---------------------------------------------------------------------------
+
+export type ModelChoice = {
+  id: string;
+  provider: string;
+  providerName: string;
+  model: string;
+  label: string;
+  tier: 'high' | 'standard';
+  available: boolean;
+};
+
+export const fetchModels = () => request<{ default: string | null; models: ModelChoice[] }>('/llm/models');
+
+export type RiskLevel = 'conservative' | 'moderate' | 'aggressive';
+export type Horizon = 'swing' | 'position' | 'long';
+
+export type BasketRequest = {
+  wallet?: string;
+  amountUsd: number;
+  risk: RiskLevel;
+  buckets: string[];
+  horizon: Horizon;
+  modelId?: string | null;
+  useSentiment: boolean;
+  tradableOnly: boolean;
+  maxPositions: number;
+};
+
+export type BasketHolding = {
+  symbol: string;
+  underlying: string;
+  name: string;
+  sector: string;
+  weight: number;
+  amountUsd: number;
+  price: number | null;
+  tradable: boolean;
+  recommendation: 'STRONG_BUY' | 'BUY' | 'HOLD' | 'SELL' | 'STRONG_SELL';
+  score: number;
+  reason: string;
+};
+
+export type Basket = {
+  id: string;
+  name: string;
+  risk: RiskLevel;
+  thesis: string;
+  allocationPct: number;
+  amountUsd: number;
+  holdings: BasketHolding[];
+  expectedVolatilityPct: number;
+};
+
+export type BasketResult = {
+  runId: string;
+  modelId: string;
+  status: 'ok' | 'fallback';
+  summary: string;
+  marketRegime: string;
+  baskets: Basket[];
+  universe: {
+    symbol: string;
+    name: string;
+    sector: string;
+    score: number;
+    recommendation: string;
+    tradable: boolean;
+    price: number | null;
+    changePct: number | null;
+    rsi: number | null;
+    sentiment: number | null;
+  }[];
+  risks: string[];
+  durationMs: number;
+  generatedAt: string;
+};
+
+export const requestBaskets = (body: BasketRequest) =>
+  request<BasketResult>('/agents/baskets', { method: 'POST', body: JSON.stringify(body) });
+
+export type Candle = { time: number; open: number; high: number; low: number; close: number; volume: number };
+export type Technicals = {
+  last: number;
+  prevClose: number;
+  changePct: number;
+  sma20: number;
+  sma50: number;
+  sma200: number;
+  rsi14: number;
+  macd: { value: number; signal: number; histogram: number };
+  volatilityPct: number;
+  high52w: number;
+  low52w: number;
+  avgVolume: number;
+  bars: number;
+};
+export type HistoryResult = {
+  symbol: string;
+  name: string | null;
+  range: string;
+  interval: string;
+  candles: Candle[];
+  technicals: Technicals | null;
+  fetchedAt: string;
+};
+
+export const fetchMarketHistory = (underlying: string, range = '6mo') =>
+  request<HistoryResult>(`/market/history/${encodeURIComponent(underlying)}?range=${range}`);

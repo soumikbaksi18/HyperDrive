@@ -6,32 +6,30 @@ import { AppService } from './app.service';
 import { loadConfig } from './config/configuration';
 import { CoreModule } from './core.module';
 import { HealthModule } from './health/health.module';
-import { LLMModule } from './modules/llm/llm.module';
 import { AgentsModule } from './modules/agents/agents.module';
+import { LLMModule } from './modules/llm/llm.module';
+import { NewsModule } from './news/news.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
+import { QuotesModule } from './quotes/quotes.module';
+import { SwapsModule } from './swaps/swaps.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
     }),
-    HealthModule,
-    LLMModule,
-    AgentsModule,
-import { PortfolioModule } from './portfolio/portfolio.module';
-import { QuotesModule } from './quotes/quotes.module';
-import { SwapsModule } from './swaps/swaps.module';
-import { NewsModule } from './news/news.module';
-
-@Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.local', '.env'] }),
-    MongooseModule.forRootAsync({ useFactory: () => ({ uri: loadConfig().mongoUri }) }),
+    MongooseModule.forRootAsync({
+      useFactory: () => ({ uri: loadConfig().mongoUri }),
+    }),
     CoreModule,
     QuotesModule,
     PortfolioModule,
     SwapsModule,
     NewsModule,
     HealthModule,
+    LLMModule,
+    AgentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
